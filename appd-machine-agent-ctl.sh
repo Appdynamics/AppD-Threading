@@ -61,7 +61,7 @@ case "$CMD" in
     fi
     CONTROLLER_STATUS_URL="$APPD_CONTROLLER_PROTOCOL://$APPDYNAMICS_CONTROLLER_HOST_NAME:$APPDYNAMICS_CONTROLLER_PORT/controller/rest/serverstatus"
     echo $CONTROLLER_STATUS_URL
-    curl -v $CONTROLLER_STATUS_URL
+    curl $CONTROLLER_STATUS_URL
     if [ $? -ne 0 ]; then
         echo "Failed to connect to: $CONTROLLER_STATUS_URL"
         exit 0
@@ -74,5 +74,6 @@ case "$CMD" in
     echo "container - start the AppDynamics Machine Agent in a Docker Container"
     echo "service   - start the AppDynamics Machine Agent as Docker Service"
     echo "stop      - stop AppDynamics Machine Agent"
+    echo "validate  - validate connection to the AppDynamics Controller"
     ;;
 esac
