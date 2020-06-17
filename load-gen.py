@@ -2,20 +2,29 @@ import requests
 import threading
 import time
 import sys
+import os
+
+
+
+def getEnvironmentConfig():
+    return { "APP_LOCAL_PORT": os.environ.get('APP_LOCAL_PORT', '8888'),
+             "v1": int( os.environ.get('V1', 5)),
+             "v2": int( os.environ.get('V2', 10)) }
+
 
 def readPage():
     s = requests.session()
     #s.config['keep_alive'] = True
-    r = s.get("http://localhost:8080/SimpleWebApp1/test1")
+    r = s.get("http://localhost:{AppPort}/SimpleWebApp1/test1".format(AppPort=AppPort))
     print(r)
 
-def thread1(id=0, durationSec=60, delaySec=15, waitMs=0):
+def thread1(id=0, durationSec=60, delaySec=15, waitMs=0, url=""):
     print( "Thread running ", id)
     s = requests.session()
     untilTime = time.time() + durationSec
     while (untilTime > time.time()):
         try:
-            r = s.get("http://localhost:8080/SimpleWebApp1/test1?waitMs={}".format(waitMs*1000))
+            r = s.get("http://localhost:{AppPort}/{url}?waitMs={waitMs}".format(AppPort=AppPort, url=url, waitMs=waitMs*1000))
             if r.status_code != 200:
                 print( "Thread {} status {}".format(i,r.status_code))
             time.sleep(delaySec)
@@ -42,13 +51,31 @@ if nArgs > 1:
     cmd = sys.argv[1]
 
 if cmd == "test1":
+    config = getEnvironmentConfig()
+    AppPort=config["APP_LOCAL_PORT"]
+    # Use when deployed into apache install
     iterations, durationSec, delaySec, waitMs = getArgs1()
+    url = "SimpleWebApp1/test1"
     print( iterations, durationSec, delaySec )
     for i in range(1,iterations):
-        t1 = threading.Thread(target=thread1, args=(i, durationSec, delaySec, waitMs))
+        t1 = threading.Thread(target=thread1, args=(i, durationSec, delaySec, waitMs, url))
         t1.start()
 
 elif cmd == "test2":
+    config = getEnvironmentConfig()
+    AppPort=config["APP_LOCAL_PORT"]
+    # Use when deployed into tomcat container
+    iterations, durationSec, delaySec, waitMs = getArgs1()
+    url = "App1-0.0.1-SNAPSHOT/test1"
+    print( iterations, durationSec, delaySec )
+    for i in range(1,iterations):
+        t1 = threading.Thread(target=thread1, args=(i, durationSec, delaySec, waitMs, url))
+        t1.start()
+
+elif cmd == "config":
+    config = getEnvironmentConfig()
+    print( config )
+elif cmd == "readpage":
     readPage()
 
 else:
