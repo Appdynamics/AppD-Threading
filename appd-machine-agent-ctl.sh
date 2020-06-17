@@ -1,6 +1,9 @@
 #!/bin/bash
 #
-# Deploy the machineagent inside a docker container
+# Deploy the machineagent inside a Docker Container or as Docker Service
+#
+# Maintainer: David Ryder, david.ryder@appdynamics.com
+#
 # Collects metrics for Docker containers on the same host, and server and machine metrics for the host itself.
 # The Controller shows all monitored containers, for each host, and the container and host IDs, for each container.
 # Reference https://docs.appdynamics.com/display/PRO45/Monitoring+Containers+with+Docker+Visibility
