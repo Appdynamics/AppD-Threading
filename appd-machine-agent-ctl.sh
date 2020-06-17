@@ -39,15 +39,15 @@ case "$CMD" in
     # Stop the container
     ID=`docker inspect --format='{{ .Id }}' $CONTAINER_NAME`
     docker stop $ID
-    
+
     # Stop the service
     ID=`docker service inspect --format='{{ .ID }}' $CONTAINER_NAME`
     docker service rm $ID
   ;;
   *)
     echo "Commands:"
-    echo "container - start the AppDynamics Machine Agent in a Docker container"
-    echo "service   - start the AppDynamics Machine Agent in as Docker Service"
-    echo "stop   - stop AppDynamics Machine Agent"
+    echo "container - start the AppDynamics Machine Agent in a Docker Container"
+    echo "service   - start the AppDynamics Machine Agent as Docker Service"
+    echo "stop      - stop AppDynamics Machine Agent"
     ;;
 esac
