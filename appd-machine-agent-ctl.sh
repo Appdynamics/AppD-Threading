@@ -10,11 +10,15 @@
 #
 CMD=${1:-"help"} # All Commands
 CONTAINER_NAME="appdmachineagent"
+
+_validateEnvironmentVars() { echo "Validating environment variables for $1" ; shift 1 ; VAR_LIST=("$@") ; for i in "${VAR_LIST[@]}"; do echo "  $i=${!i}" ; if [ -z ${!i} ] || [[ "${!i}" == REQUIRED_* ]]; then echo "Environment variable not set: $i"; ERROR="1"; fi done ; [ "$ERROR" == "1" ] && { echo "Exiting"; exit 1; } }
+
 case "$CMD" in
   test)
     echo "Test"
     ;;
   container)
+   _validateEnvironmentVars "Docker Container " "APPDYNAMICS_CONTROLLER_HOST_NAME" "APPDYNAMICS_CONTROLLER_PORT" "APPDYNAMICS_CONTROLLER_SSL_ENABLED" "APPDYNAMICS_AGENT_ACCOUNT_NAME" "APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY"
     docker run --rm -it -d -e APPDYNAMICS_CONTROLLER_HOST_NAME=$APPDYNAMICS_CONTROLLER_HOST_NAME \
     -e APPDYNAMICS_CONTROLLER_PORT=$APPDYNAMICS_CONTROLLER_PORT \
     -e APPDYNAMICS_CONTROLLER_SSL_ENABLED=$APPDYNAMICS_CONTROLLER_SSL_ENABLED \
@@ -26,6 +30,7 @@ case "$CMD" in
     --name $CONTAINER_NAME appdynamics/machine-agent-analytics:latest /opt/appdynamics/startup.sh
     ;;
   service)
+    _validateEnvironmentVars "Docker Container " "APPDYNAMICS_CONTROLLER_HOST_NAME" "APPDYNAMICS_CONTROLLER_PORT" "APPDYNAMICS_CONTROLLER_SSL_ENABLED" "APPDYNAMICS_AGENT_ACCOUNT_NAME" "APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY"
     docker service create --mode global \
       -e APPDYNAMICS_CONTROLLER_HOST_NAME=$APPDYNAMICS_CONTROLLER_HOST_NAME \
       -e APPDYNAMICS_CONTROLLER_PORT=$APPDYNAMICS_CONTROLLER_PORT \
@@ -46,7 +51,10 @@ case "$CMD" in
     # Stop the service
     ID=`docker service inspect --format='{{ .ID }}' $CONTAINER_NAME`
     docker service rm $ID
-  ;;
+    ;;
+  validate)
+  _validateEnvironmentVars "Docker Container " "APPDYNAMICS_CONTROLLER_HOST_NAME" "APPDYNAMICS_CONTROLLER_PORT" "APPDYNAMICS_CONTROLLER_SSL_ENABLED" "APPDYNAMICS_AGENT_ACCOUNT_NAME" "APPDYNAMICS_AGENT_ACCOUNT_ACCESS_KEY"
+    ;;
   *)
     echo "Commands:"
     echo "container - start the AppDynamics Machine Agent in a Docker Container"
