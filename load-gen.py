@@ -12,10 +12,10 @@ def getEnvironmentConfig():
              "v2": int( os.environ.get('V2', 10)) }
 
 
-def readPage():
+def readPage(url):
     s = requests.session()
     #s.config['keep_alive'] = True
-    r = s.get("http://localhost:{AppPort}/SimpleWebApp1/test1".format(AppPort=AppPort))
+    r = s.get("http://localhost:{AppPort}/{url}".format(url=url,AppPort=AppPort))
     print(r)
 
 def thread1(id=0, durationSec=60, delaySec=15, waitMs=0, url=""):
@@ -75,8 +75,12 @@ elif cmd == "test2":
 elif cmd == "config":
     config = getEnvironmentConfig()
     print( config )
+
 elif cmd == "readpage":
-    readPage()
+    config = getEnvironmentConfig()
+    AppPort=config["APP_LOCAL_PORT"]
+    url = "App1-0.0.1-SNAPSHOT/test1"
+    readPage(url)
 
 else:
     print("Unknown command ", cmd)
