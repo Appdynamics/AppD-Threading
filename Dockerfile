@@ -25,3 +25,8 @@ COPY load1.sh /
 COPY --from=appdynamics/java-agent:20.5.0 /opt/appdynamics /AppDynamics/app/
 
 RUN cd /; /ctl.sh configure-tomcat ; /ctl.sh configure-tomcat-appd-appagent
+
+EXPOSE 8080
+#CMD [ "sleep", "3600" ]
+
+CMD [ "/ctl.sh", "start-tomcat" ]
